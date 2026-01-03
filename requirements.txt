@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary
+"python-jose[cryptography]"
+PyJWT
+pydantic-settings
+passlib
+asyncpg
+pydantic[email]
+python-multipart
+argon2-cffi
+sqlalchemy[asyncio]
+alembic
