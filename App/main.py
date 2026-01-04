@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from .core import database
 from .api import authentication , register
-from .model import user_mod #its very important to import these models inside main.py file to add them to database
+from .model import user_mod ,patient_mod#its very important to import these models inside main.py file to add them to database
 
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .core import database
-from .api import authentication, register
+from .api import authentication, register , patient
 
 # 1. LifeSpan Management
 # This replaces the old way of creating tables. 
@@ -31,6 +31,7 @@ app = FastAPI(
 # 3. Include Routers
 app.include_router(authentication.router)
 app.include_router(register.router)
+app.include_router(patient.router)
 
 @app.get("/")
 async def root():
