@@ -30,6 +30,12 @@ class PatientIn(BaseModel):
             raise ValueError("Invalid phone number format. Use E.164 format like +919876543210")
         return value
     
+class PatientResponse(BaseModel):
+    name:str
+    gender:str
+    dob:date=Field(...,description="Patient's date of birth")
+    Address:str=Field(None)
+    
 
          
        

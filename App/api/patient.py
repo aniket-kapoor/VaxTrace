@@ -1,7 +1,7 @@
 from fastapi import APIRouter ,Depends,HTTPException,status
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
-from ..schemas.patient import PatientIn
+from ..schemas.patient import PatientIn, PatientResponse
 
 from ..services import dependency
 from ..core import database
@@ -16,7 +16,7 @@ router = APIRouter(
     tags=["Patients"]
 )
 
-@router.post("/createPatient",status_code=status.HTTP_201_CREATED)
+@router.post("/createPatient",status_code=status.HTTP_201_CREATED, response_model=PatientResponse)
 
 async def create_patient_route(patient_data:PatientIn,
                          db: AsyncSession = Depends(database.get_db),
@@ -26,7 +26,7 @@ async def create_patient_route(patient_data:PatientIn,
 
 
 
-@router.get("/getPatient/{patient_id}")
+@router.get("/getPatient/{patient_id}" , response_model=PatientResponse)
 async def get_patient(patient_id: uuid.UUID ,
                 db: AsyncSession = Depends(database.get_db),
                 
