@@ -4,6 +4,7 @@ from sqlalchemy import select
 import uuid
 from ..model.patient_mod import Patient
 
+# from ..services.pat_plan_service import generate_patient_vaccine_plan
 from ..services.pat_plan_service import generate_patient_vaccine_plan
 
 
