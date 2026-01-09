@@ -19,8 +19,7 @@ class Patient(Base):
 
     parent_contact: Mapped[str] = mapped_column(
         String(16),
-        nullable=False,
-        unique=True
+        nullable=False
     )
     state: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     district: Mapped[str] = mapped_column(String(50), nullable=False, index=True)

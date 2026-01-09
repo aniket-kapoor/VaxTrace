@@ -4,6 +4,9 @@ from sqlalchemy import select
 import uuid
 from ..model.patient_mod import Patient
 
+# from ..services.pat_plan_service import generate_patient_vaccine_plan
+from ..services.pat_plan_service import generate_patient_vaccine_plan
+
 
 from ..schemas.patient import PatientIn
 from ..core import database
@@ -18,6 +21,13 @@ async def create_patient(
     db.add(patient)
     await db.commit()
     await db.refresh(patient)
+
+    await generate_patient_vaccine_plan(db=db,
+                                patient_id=patient.id,
+                                birth_date=patient.dob
+                             )
+
+
     return patient
 
 
