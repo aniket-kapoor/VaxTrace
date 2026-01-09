@@ -1,8 +1,13 @@
 from ..core.database import Base
-from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer,String, Boolean , DateTime , func
+from sqlalchemy.orm import Mapped, mapped_column , relationship 
+from sqlalchemy import Integer,String, Boolean , DateTime , func , ForeignKey
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .vax_master import Vaccine
+
 
 class VaccineScheduleMaster(Base):
     __tablename__ = "vaccine_schedule"
@@ -15,6 +20,7 @@ class VaccineScheduleMaster(Base):
 
     vaccine_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
+        ForeignKey("vaccine_master.id"),
         nullable=False
     )
 
@@ -41,4 +47,8 @@ class VaccineScheduleMaster(Base):
     created_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now()
+    )
+
+    vaccine: Mapped["Vaccine"] = relationship(
+        back_populates="schedules"
     )

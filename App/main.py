@@ -1,8 +1,11 @@
 from fastapi import FastAPI
 from .core import database
 from .api import authentication , register
-from .model import user_mod ,patient_mod#its very important to import these models inside main.py file to add them to database
+#its very important to import these models inside main.py file to add them to database
+from .model import  user_mod,vax_master,vax_schedule,patient_mod,pat_vax_schedule,pat_vax_plan   #its very important to import these models inside main.py file to add them to database
 
+from .services.seed import seed_vaccine_data
+from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .core import database
@@ -17,7 +20,19 @@ async def lifespan(app: FastAPI):
     async with database.engine.begin() as conn:
         # This is the async way to run create_all
         await conn.run_sync(database.Base.metadata.create_all)
-    
+
+
+    # 2. Run the seed function
+        # We define a small wrapper to use a Session inside run_sync
+         
+        def do_seed(sync_conn):
+            with Session(sync_conn) as session:
+                seed_vaccine_data(session)
+                session.commit()
+
+        await conn.run_sync(do_seed)
+
+        
     yield
     # Shutdown: Close database connections
     await database.engine.dispose()

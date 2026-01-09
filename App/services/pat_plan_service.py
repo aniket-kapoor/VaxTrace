@@ -1,7 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import timedelta
-from ..model import pat_vax_plan , vax_schedule
+from ..model.vax_schedule import VaccineScheduleMaster
+from ..model.pat_vax_plan import PatientVaccinePlan
 
 
 async def generate_patient_vaccine_plan(db:AsyncSession,
@@ -9,7 +10,7 @@ async def generate_patient_vaccine_plan(db:AsyncSession,
                                         birth_date
                                     ):
     
-    result= await db.execute(select(vax_schedule))
+    result= await db.execute(select(VaccineScheduleMaster))
     schedules=result.scalars().all()
     
     for schedule in schedules:
@@ -17,7 +18,7 @@ async def generate_patient_vaccine_plan(db:AsyncSession,
 
     plans=[]
 
-    plan=pat_vax_plan(patient_id=patient_id,
+    plan=PatientVaccinePlan(patient_id=patient_id,
                       vaccine_id=schedule.vaccine_id ,
                       dose_number=schedule.dose_number,
                       due_date=due_date  ,
