@@ -52,3 +52,14 @@ class PatientVaccinePlan(Base):
         DateTime(timezone=True),
         server_default=func.now()
     )
+
+    verified_by_worker: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=False
+    )
+    
+    verified_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )

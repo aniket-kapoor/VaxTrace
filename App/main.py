@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .core import database
-from .api import authentication, register , patient
+from .api import authentication, register , patient , vaxplan
 
 # 1. LifeSpan Management
 # This replaces the old way of creating tables. 
@@ -47,6 +47,7 @@ app = FastAPI(
 app.include_router(authentication.router)
 app.include_router(register.router)
 app.include_router(patient.router)
+app.include_router(vaxplan.router)
 
 @app.get("/")
 async def root():
