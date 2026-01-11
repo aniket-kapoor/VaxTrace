@@ -1,6 +1,12 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from datetime import timedelta
+from fastapi import HTTPException
+import datetime
+
+from datetime import datetime, timezone
+
+from ..model.vax_auditlog import VaccineAuditLog
 from ..model.vax_schedule import VaccineScheduleMaster
 from ..model.pat_vax_plan import PatientVaccinePlan
 
@@ -84,6 +90,59 @@ async def get_patient_vaccine_plan(db:AsyncSession,
         "address": patient_info.Address,
         "vaccines": vaccines
     }
+
+
+
+async def update_vaccine_status_with_audit(
+    db:AsyncSession,
+    plan_id,
+    new_status,
+    worker_id,
+    confirm: bool
+):
+    if not confirm:
+        raise HTTPException(
+            status_code=400,
+            detail="Final confirmation required"
+        )
+
+    result = await db.execute(
+        select(PatientVaccinePlan).where(
+            PatientVaccinePlan.id == plan_id
+        )
+    )
+    plan = result.scalar_one_or_none()
+
+    if not plan:
+        raise HTTPException(404, "Vaccine plan not found")
+
+    if plan.status == "COMPLETED":
+        raise HTTPException(
+            status_code=409,
+            detail="Vaccine already marked as completed"
+        )
+
+    old_status = plan.status
+
+    #Update main table
+    plan.status = new_status
+    plan.verified_by_worker = worker_id
+    plan.verified_at = datetime.now(timezone.utc)
+
+    # Create audit log
+    audit_log = VaccineAuditLog(
+        plan_id=plan.id,
+        old_status=old_status,
+        new_status=new_status,
+        changed_by=worker_id
+    )
+
+    db.add(audit_log)
+
+    await db.commit()
+    await db.refresh(plan)
+
+    return plan
 
     
 

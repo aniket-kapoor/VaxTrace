@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from .core import database
 from .api import authentication , register
 #its very important to import these models inside main.py file to add them to database
-from .model import  user_mod,vax_master,vax_schedule,patient_mod,pat_vax_schedule,pat_vax_plan   #its very important to import these models inside main.py file to add them to database
+from .model import  user_mod, vax_auditlog,vax_master,vax_schedule,patient_mod,pat_vax_plan  #its very important to import these models inside main.py file to add them to database
 
 from .services.seed import seed_vaccine_data
 from sqlalchemy.orm import Session

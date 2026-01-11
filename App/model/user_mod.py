@@ -1,7 +1,12 @@
 from sqlalchemy import  Integer, String, Enum, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column , relationship
 import enum
 from ..core.database import Base # Ensure this points to the new DeclarativeBase
+
+from typing import TYPE_CHECKING   
+if TYPE_CHECKING:
+    from .vax_auditlog import VaccineAuditLog
+    
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
@@ -26,3 +31,11 @@ class Users(Base):
         default=UserRole.PARENT, 
         nullable=False
     )
+
+    audit: Mapped[list["VaccineAuditLog"]] = relationship(
+            back_populates="user",
+            cascade="all, delete-orphan"
+        )
+    
+    
+

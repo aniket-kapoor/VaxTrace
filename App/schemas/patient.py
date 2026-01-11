@@ -3,6 +3,7 @@ from typing import Optional, List
 from datetime import date
 import re
 import uuid
+from enum import Enum
 
 
 class PatientIn(BaseModel):
@@ -50,6 +51,15 @@ class PatientVaccinePlanOut(BaseModel):
     gender: str
     address: str
     vaccines:List[VaccineStatusOut]
+
+class VaccineStatus(str, Enum):
+    COMPLETED = "COMPLETED"
+    MISSED = "MISSED"
+
+class VaccineStatusUpdateIn(BaseModel):
+    status: VaccineStatus
+    confirm: bool
+
 
 
 
