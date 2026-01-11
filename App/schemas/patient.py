@@ -1,7 +1,9 @@
 from pydantic import BaseModel, Field , field_validator
-from typing import Optional
+from typing import Optional, List
 from datetime import date
 import re
+import uuid
+from enum import Enum
 
 
 class PatientIn(BaseModel):
@@ -35,6 +37,34 @@ class PatientResponse(BaseModel):
     gender:str
     dob:date=Field(...,description="Patient's date of birth")
     Address:str=Field(None)
+
+
+class VaccineStatusOut(BaseModel):
+    vaccine_name: str
+    dose_number: int
+    due_date: date
+    status: str
+
+class PatientVaccinePlanOut(BaseModel):
+    patient_id: uuid.UUID
+    name: str
+    gender: str
+    address: str
+    vaccines:List[VaccineStatusOut]
+
+class VaccineStatus(str, Enum):
+    COMPLETED = "COMPLETED"
+    MISSED = "MISSED"
+
+class VaccineStatusUpdateIn(BaseModel):
+    status: VaccineStatus
+    confirm: bool
+
+
+
+
+
+
     
 
          

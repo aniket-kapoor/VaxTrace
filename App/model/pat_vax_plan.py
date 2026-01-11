@@ -1,8 +1,13 @@
 from ..core.database import Base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column , relationship
 from sqlalchemy import Integer,String, Boolean , DateTime , func , Date,UniqueConstraint, ForeignKey
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
+
+
+from typing import TYPE_CHECKING   
+if TYPE_CHECKING:
+    from .vax_auditlog import VaccineAuditLog
 
 
 class PatientVaccinePlan(Base):
@@ -52,3 +57,18 @@ class PatientVaccinePlan(Base):
         DateTime(timezone=True),
         server_default=func.now()
     )
+
+    verified_by_worker: Mapped[int] = mapped_column(
+        Integer,
+        ForeignKey("users.id"),
+        default=None
+    )
+    
+    verified_at: Mapped[DateTime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True
+    )
+
+    audit: Mapped[list["VaccineAuditLog"]] = relationship(
+            back_populates="plan",
+        )
