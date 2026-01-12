@@ -11,6 +11,8 @@ from contextlib import asynccontextmanager
 from .core import database
 from .api import authentication, register , patient , vaxplan
 
+from fastapi.middleware.cors import CORSMiddleware
+
 # 1. LifeSpan Management
 # This replaces the old way of creating tables. 
 # It runs once when the server starts and cleans up when it stops.
@@ -41,6 +43,23 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="VaxTrace AI",
     lifespan=lifespan
+)
+
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",   # React dev server
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],   # GET, POST, PUT, PATCH, DELETE
+    allow_headers=["*"],   # Authorization, Content-Type, etc
 )
 
 # 3. Include Routers

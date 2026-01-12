@@ -43,23 +43,26 @@ class VaccineAuditLog(Base):
     changed_by: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("users.id"),
-        nullable=False
+        nullable=True
+        
     )
 
     changed_at: Mapped[DateTime] = mapped_column(
         DateTime(timezone=True),
-        server_default=func.now()
+        server_default=func.now(),
+        nullable=True
     )
 
-    user: Mapped[list["Users"]] = relationship(
-            back_populates="audit",
-            
-        )
+    user: Mapped["Users"] = relationship(
+    back_populates="audit"
+    )
+
     
-    plan: Mapped[list["PatientVaccinePlan"]] = relationship(
-            back_populates="audit",
-            
-        )
+    # VaccineAuditLog
+    plan: Mapped["PatientVaccinePlan"] = relationship(
+    back_populates="audit"
+    )
+
 
 
 
