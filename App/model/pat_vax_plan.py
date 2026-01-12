@@ -61,12 +61,13 @@ class PatientVaccinePlan(Base):
     verified_by_worker: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("users.id"),
-        default=None
+        nullable=True
     )
     
     verified_at: Mapped[DateTime | None] = mapped_column(
         DateTime(timezone=True),
         nullable=True
+        
     )
 
     audit: Mapped[list["VaccineAuditLog"]] = relationship(
