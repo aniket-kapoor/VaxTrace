@@ -49,13 +49,15 @@ app = FastAPI(
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "http://localhost:3000",   # React dev server
-        "http://127.0.0.1:3000",
+        "http://localhost:5174",
+        "http://localhost:5173"
+              # React dev server
+        
     ],
     allow_credentials=True,
     allow_methods=["*"],   # GET, POST, PUT, PATCH, DELETE

@@ -51,10 +51,12 @@ async def get_patient_vaccine_plan(db:AsyncSession,
             Patient.name,
             Patient.gender,
             Patient.Address,
+
+            PatientVaccinePlan.id.label("plan_id"),
             Vaccine.vaccine_code.label("vaccine_name"),
             PatientVaccinePlan.dose_number,
             PatientVaccinePlan.due_date,
-            PatientVaccinePlan.status
+            PatientVaccinePlan.status,
         )
         .join(PatientVaccinePlan, Patient.id==PatientVaccinePlan.patient_id)
         .join(Vaccine, Vaccine.id==PatientVaccinePlan.vaccine_id)
@@ -79,7 +81,8 @@ async def get_patient_vaccine_plan(db:AsyncSession,
             "vaccine_name": row.vaccine_name,
             "dose_number": row.dose_number,
             "due_date": row.due_date,
-            "status": row.status
+            "status": row.status,
+            "plan_id": row.plan_id, 
         }
         )
 
@@ -95,6 +98,7 @@ async def get_patient_vaccine_plan(db:AsyncSession,
 
 async def update_vaccine_status_with_audit(
     db:AsyncSession,
+    new_date,
     plan_id,
     new_status,
     worker_id,
@@ -128,6 +132,7 @@ async def update_vaccine_status_with_audit(
     plan.status = new_status
     plan.verified_by_worker = worker_id
     plan.verified_at = datetime.now(timezone.utc)
+    plan.administered_date=new_date
 
     # Create audit log
     audit_log = VaccineAuditLog(
