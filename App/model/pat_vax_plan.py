@@ -48,6 +48,11 @@ class PatientVaccinePlan(Base):
         nullable=False
     )
 
+    administered_date: Mapped[Date] = mapped_column(
+        Date,
+        nullable=True
+    )
+
     status: Mapped[str] = mapped_column(
         String(20),
         default="PENDING"  # PENDING, COMPLETED, MISSED

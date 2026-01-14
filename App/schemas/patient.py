@@ -44,6 +44,7 @@ class VaccineStatusOut(BaseModel):
     dose_number: int
     due_date: date
     status: str
+    plan_id:uuid.UUID
 
 class PatientVaccinePlanOut(BaseModel):
     patient_id: uuid.UUID
