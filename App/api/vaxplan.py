@@ -6,8 +6,8 @@ import uuid
 from ..services import dependency
 from ..core import database
 from ..services.pat_plan_service import get_patient_vaccine_plan
-from ..services.pat_plan_service import update_vaccine_status_with_audit
-from ..schemas.patient import PatientVaccinePlanOut, VaccineStatusUpdateIn
+from ..services.pat_plan_service import update_vaccine_plan
+from ..schemas.patient import PatientVaccinePlanOut, VaccineStatusUpdateIn , VaccineStatusOut
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -32,8 +32,9 @@ async def get_plan(patient_id: uuid.UUID,
 
 
 @router.put(
-    "/plan/{plan_id}/confirm",
+    "/plan/{plan_id}/update",
     summary="Confirm vaccination and store audit log"
+    
 )
 async def confirm_vaccine(
     plan_id: uuid.UUID,
@@ -41,10 +42,11 @@ async def confirm_vaccine(
     db: AsyncSession = Depends(database.get_db),
     current_user = Depends(dependency.allow_worker)
 ):
-    plan = await update_vaccine_status_with_audit(
+    plan = await update_vaccine_plan(
         db=db,
         plan_id=plan_id,
-        new_status=payload.status,
+        new_status=payload.new_status,
+        new_date=payload.update_date,
         worker_id=current_user.id,
         confirm=payload.confirm
     )
@@ -53,6 +55,7 @@ async def confirm_vaccine(
         "message": "Vaccination status updated successfully",
         "plan_id": plan.id,
         "status": plan.status,
+        "administered_date":plan.administered_date,
         "verified_by": current_user.id,
         "verified_at": plan.verified_at
     }
