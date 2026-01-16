@@ -43,6 +43,7 @@ class VaccineStatusOut(BaseModel):
     vaccine_name: str
     dose_number: int
     due_date: date
+    administered_date:Optional[date] = None
     status: str
     plan_id:uuid.UUID
 
@@ -58,8 +59,13 @@ class VaccineStatus(str, Enum):
     MISSED = "MISSED"
 
 class VaccineStatusUpdateIn(BaseModel):
-    status: VaccineStatus
-    confirm: bool
+    update_date: Optional[date] = None
+    new_status:str
+    confirm:bool
+
+
+
+
 
 
 
