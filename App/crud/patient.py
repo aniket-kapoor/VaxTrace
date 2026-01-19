@@ -1,34 +1,72 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
+from fastapi import Depends, UploadFile, HTTPException
 from sqlalchemy import select
-import uuid
-from ..model.patient_mod import Patient
+import uuid , os 
+
+from ..model.patient_mod import Patient 
+from ..model.patientDocs import PatientDocuments
 
 # from ..services.pat_plan_service import generate_patient_vaccine_plan
-from ..services.pat_plan_service import generate_patient_vaccine_plan
+from ..services.pat_plan_service import generate_patient_vaccine_plan 
+from ..services.uploadFiles import save_upload_file
 
 
 from ..schemas.patient import PatientIn
 from ..core import database
 
 
-async def create_patient(
+async def create_patient_with_dob_document(
                 db: AsyncSession,
-                patient_data:PatientIn 
+                patient_data ,
+                dob_document
                 ) -> Patient:
+        
+        file_path: str | None = None
     
-    patient=Patient(**patient_data.model_dump())
-    db.add(patient)
-    await db.commit()
-    await db.refresh(patient)
+        try:
+            file_path = await save_upload_file(dob_document)
+            
+            patient=Patient(**patient_data.model_dump())
+            db.add(patient)
+            await db.flush()
 
-    await generate_patient_vaccine_plan(db=db,
-                                patient_id=patient.id,
-                                birth_date=patient.dob
-                             )
+            document=PatientDocuments(patient_id=patient.id,
+                                    document_type="DOB_PROOF",
+                                    file_path=file_path)
+            db.add(document)
+
+            await generate_patient_vaccine_plan(db=db,
+                                        patient_id=patient.id,
+                                        birth_date=patient.dob
+                                    )
+            
+            await db.commit()
+            await db.refresh(patient)
+            await db.refresh(document)
 
 
-    return patient
+            return {
+            "patient": patient,
+            "dob_document": document
+             }
+
+
+
+        except Exception as e:
+                await db.rollback()
+
+                # cleanup file if DB fails
+                if file_path and os.path.exists(file_path):
+                    os.remove(file_path)
+
+         
+
+                raise HTTPException(
+                    status_code=500,
+                    detail=str(e)
+                        )
+
+            
 
 
 

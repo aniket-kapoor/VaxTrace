@@ -76,9 +76,11 @@ async def get_patient_vaccine_plan(db:AsyncSession,
         .join(PatientVaccinePlan, Patient.id==PatientVaccinePlan.patient_id)
         .join(Vaccine, Vaccine.id==PatientVaccinePlan.vaccine_id)
         .where(Patient.id == patient_id)
-        .order_by(PatientVaccinePlan.due_date)
-    )
-    
+        .order_by(PatientVaccinePlan.due_date,
+                        PatientVaccinePlan.dose_number,
+                        PatientVaccinePlan.id)
+                        )
+                        
     result = await db.execute(query)
 
     rows=result.all()

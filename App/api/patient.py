@@ -1,12 +1,12 @@
-from fastapi import APIRouter ,Depends,HTTPException,status
+from fastapi import APIRouter ,Depends,HTTPException,status,UploadFile , File
 from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
-from ..schemas.patient import PatientIn, PatientResponse
+from ..schemas.patient import PatientIn, PatientOnboardResponse , PatientResponse
 
 from ..services import dependency
 from ..core import database
 from ..crud.patient  import (
-    create_patient,
+    create_patient_with_dob_document,
     get_patient_by_id,
     deactivate_patient
 )
@@ -16,13 +16,14 @@ router = APIRouter(
     tags=["Patients"]
 )
 
-@router.post("/createPatient",status_code=status.HTTP_201_CREATED, response_model=PatientResponse)
+@router.post("/createPatient",status_code=status.HTTP_201_CREATED, response_model=PatientOnboardResponse)
 
-async def create_patient_route(patient_data:PatientIn,
+async def create_patient_route(patient_data:PatientIn = Depends(PatientIn.as_form),
+                         dob_document: UploadFile = File(...),
                          db: AsyncSession = Depends(database.get_db),
                          current_user = Depends(dependency.allow_worker)
                          ):
-     return await create_patient(db, patient_data)
+     return await create_patient_with_dob_document(db, patient_data , dob_document)
 
 
 
