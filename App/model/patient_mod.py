@@ -16,6 +16,8 @@ class Patient(Base):
     name:Mapped[str]=mapped_column(String(16))
     gender:Mapped[str]
     dob: Mapped[date] = mapped_column(Date, nullable=False)
+    father_name:Mapped[str]=mapped_column(String(16))
+
 
     parent_contact: Mapped[str] = mapped_column(
         String(16),

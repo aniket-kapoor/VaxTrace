@@ -20,7 +20,7 @@ router = APIRouter(tags=['Workers'])
 
 async def get_plan(patient_id: uuid.UUID,
                    db: AsyncSession = Depends(database.get_db),
-                   current_user = Depends(dependency.allow_worker)
+                   current_user = Depends(dependency.allow_all)
                    ):
     
     data= await get_patient_vaccine_plan(db, patient_id )

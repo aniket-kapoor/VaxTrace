@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field , field_validator
+from fastapi import Form
 from typing import Optional, List
 from datetime import date
 import re
@@ -10,6 +11,7 @@ class PatientIn(BaseModel):
     name:str
     gender:str
     dob:date=Field(...,description="Patient's date of birth")
+    father_name:str=Field(...,description="Father's name")
     parent_contact:str=Field(...,description="Enter parent's phone number")
     state: str = Field(..., example="Punjab")
     district: str = Field(..., example="Amritsar")
@@ -32,11 +34,69 @@ class PatientIn(BaseModel):
             raise ValueError("Invalid phone number format. Use E.164 format like +919876543210")
         return value
     
+    
+    @classmethod
+    def as_form(
+        cls,
+        name: str = Form(...),
+        gender: str = Form(...),
+        dob: date = Form(..., description="Patient's date of birth"),
+        father_name: str = Form(..., description="Father's name"),
+        parent_contact: str = Form(..., description="Enter parent's phone number"),
+        state: str = Form(...),
+        district: str = Form(...),
+        city_or_village: Optional[str] = Form(None),
+        pincode: Optional[str] = Form(None),
+        Address: Optional[str] = Form(None),
+    ) -> "PatientIn":
+        return cls(
+            name=name,
+            gender=gender,
+            dob=dob,
+            father_name=father_name,
+            parent_contact=parent_contact,
+            state=state,
+            district=district,
+            city_or_village=city_or_village,
+            pincode=pincode,
+            Address=Address,
+        )
+    
+
+
+
+
+
+
+
+
+
+
+
+
+    
 class PatientResponse(BaseModel):
     name:str
     gender:str
     dob:date=Field(...,description="Patient's date of birth")
     Address:str=Field(None)
+
+class DocumentUploadResponse(BaseModel):
+    id:uuid.UUID
+    document_type:str
+    file_path:str
+
+class PatientOnboardResponse(BaseModel):
+    patient: PatientResponse
+    dob_document: DocumentUploadResponse
+
+
+
+
+
+
+
+
 
 
 class VaccineStatusOut(BaseModel):
