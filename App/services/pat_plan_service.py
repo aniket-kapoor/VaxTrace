@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy import func
 from datetime import timedelta
 from fastapi import HTTPException , status
 import datetime
@@ -56,6 +57,80 @@ async def generate_patient_vaccine_plan(
 
 
 
+
+
+
+    #patient search resolve function
+
+async def resolve_patient_id_by_contact(
+    db: AsyncSession,
+    parent_contact: str,
+    dob=None,     # date object preferred
+    name: str | None = None
+):
+    # Step 1: Find all patients with this parent_contact
+    result = await db.execute(
+        select(Patient.id, Patient.name, Patient.dob)
+        .where(Patient.parent_contact == parent_contact)
+    )
+    patients = result.all()
+
+    if not patients:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No patient found for this parent_contact"
+        )
+
+    # ✅ If only 1 patient exists, return directly
+    if len(patients) == 1:
+        return patients[0].id       
+        # this can cause a bug
+
+    # Step 2: If multiple, require DOB
+    if dob is None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Multiple patients found. Please provide DOB to identify patient."
+        )
+
+    dob_matches = [p for p in patients if p.dob == dob]
+
+    if not dob_matches:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No patient found for this parent_contact + dob"
+        )
+
+    if len(dob_matches) == 1:
+        return dob_matches[0].id
+
+    # Step 3: Still multiple => require name
+    if not name:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Multiple patients found with same DOB. Please provide name also."
+        )
+
+    # Case-insensitive name match
+    name_lower = name.strip().lower()
+    name_matches = [p for p in dob_matches if p.name.strip().lower() == name_lower]
+
+    if not name_matches:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No patient found for this parent_contact + dob + name"
+        )
+
+    if len(name_matches) > 1:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Multiple patients found even after matching parent_contact + dob + name."
+        )
+
+    return name_matches[0].id
+
+
+
 async def get_patient_vaccine_plan(db:AsyncSession,
                                    patient_id):
     
@@ -75,7 +150,7 @@ async def get_patient_vaccine_plan(db:AsyncSession,
         )
         .join(PatientVaccinePlan, Patient.id==PatientVaccinePlan.patient_id)
         .join(Vaccine, Vaccine.id==PatientVaccinePlan.vaccine_id)
-        .where(Patient.id == patient_id)
+        .where(Patient.id == patient_id  )
         .order_by(PatientVaccinePlan.due_date,
                         PatientVaccinePlan.dose_number,
                         PatientVaccinePlan.id)
@@ -112,6 +187,17 @@ async def get_patient_vaccine_plan(db:AsyncSession,
         "vaccines": vaccines
     }
 
+
+
+
+async def get_patient_vaccine_plan_by_parent_contact(
+    db: AsyncSession,
+    parent_contact: str,
+    dob=None,
+    name: str | None = None
+):
+    patient_id = await resolve_patient_id_by_contact(db, parent_contact, dob, name)
+    return await get_patient_vaccine_plan(db, patient_id)
 
 
 # async def update_vaccine_status_with_audit(

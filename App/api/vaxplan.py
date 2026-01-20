@@ -1,11 +1,12 @@
-from fastapi import APIRouter ,Depends,HTTPException,status
+from fastapi import APIRouter ,Depends,HTTPException,status ,Query
 from ..schemas import user
 from ..security import hashing
 import uuid
+from datetime import date
 
 from ..services import dependency
 from ..core import database
-from ..services.pat_plan_service import get_patient_vaccine_plan
+from ..services.pat_plan_service import get_patient_vaccine_plan_by_parent_contact
 from ..services.pat_plan_service import update_vaccine_plan
 from ..schemas.patient import PatientVaccinePlanOut, VaccineStatusUpdateIn , VaccineStatusOut
 
@@ -18,12 +19,17 @@ router = APIRouter(tags=['Workers'])
 
 @router.get('/get/patients/{patient_id}/plan' , response_model=PatientVaccinePlanOut)
 
-async def get_plan(patient_id: uuid.UUID,
-                   db: AsyncSession = Depends(database.get_db),
-                   current_user = Depends(dependency.allow_all)
+async def get_plan( parent_contact: str = Query(...),
+                    dob: date | None = Query(None),
+                    name: str | None = Query(None),
+                    db: AsyncSession = Depends(database.get_db),
+                    current_user = Depends(dependency.allow_all)
                    ):
     
-    data= await get_patient_vaccine_plan(db, patient_id )
+    data= await get_patient_vaccine_plan_by_parent_contact(db=db,
+                                                            parent_contact=parent_contact,
+                                                            dob=dob,
+                                                            name=name)
 
     if not data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")

@@ -6,8 +6,16 @@ from datetime import date , datetime
 from sqlalchemy import Date, String ,DateTime,Boolean, func, Float
 from typing import Optional
 
+from sqlalchemy import UniqueConstraint
+
+
+
 class Patient(Base):
     __tablename__="patients"
+
+    __table_args__ = (
+        UniqueConstraint("parent_contact", "dob", "name", name="uq_patient_identity"),
+    )
 
     id:Mapped[uuid.UUID]=mapped_column(UUID(as_uuid=True),
                                        primary_key=True,
