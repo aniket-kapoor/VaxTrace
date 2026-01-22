@@ -3,10 +3,18 @@ from ..core.database import Base
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import date , datetime 
-from sqlalchemy import Date, String ,DateTime,Boolean, func, Float
+from sqlalchemy import Date, String ,DateTime,Boolean, func, Float, Enum
 from typing import Optional
+import enum
 
 from sqlalchemy import UniqueConstraint
+
+
+class ApplicationStatus(str, enum.Enum):
+    PROCESSING = "processing"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+
 
 
 
@@ -44,6 +52,12 @@ class Patient(Base):
     # Metadata
     
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    application_status:Mapped[ApplicationStatus]=mapped_column(
+                                                 Enum(ApplicationStatus, native_enum=False), # native_enum=False uses VARCHAR in DB for easier migrations
+                                                 default=ApplicationStatus.PROCESSING, 
+                                                 nullable=False
+                                             )
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

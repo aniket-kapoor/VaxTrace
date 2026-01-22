@@ -3,8 +3,9 @@ from fastapi import Depends, UploadFile, HTTPException
 from sqlalchemy import select
 import uuid , os 
 
-from ..model.patient_mod import Patient 
+from ..model.patient_mod import Patient , ApplicationStatus
 from ..model.patientDocs import PatientDocuments
+
 
 # from ..services.pat_plan_service import generate_patient_vaccine_plan
 from ..services.pat_plan_service import generate_patient_vaccine_plan 
@@ -27,6 +28,7 @@ async def create_patient_with_dob_document(
             file_path = await save_upload_file(dob_document)
             
             patient=Patient(**patient_data.model_dump())
+            patient.application_status=ApplicationStatus.APPROVED
             db.add(patient)
             await db.flush()
 
@@ -65,6 +67,60 @@ async def create_patient_with_dob_document(
                     status_code=500,
                     detail=str(e)
                         )
+        
+
+
+
+
+async def self_registration_application_service(
+                db: AsyncSession,
+                patient_data ,
+                dob_document
+                ) -> Patient:
+        
+        file_path: str | None = None
+    
+        try:
+            file_path = await save_upload_file(dob_document)
+            
+            patient=Patient(**patient_data.model_dump())
+            db.add(patient)
+            await db.flush()
+
+            document=PatientDocuments(patient_id=patient.id,
+                                    document_type="DOB_PROOF",
+                                    file_path=file_path)
+            db.add(document)
+
+            await db.commit()
+            await db.refresh(patient)
+            await db.refresh(document)
+
+
+            return {
+            "patient_name":patient.name,
+            "dob":patient.dob,
+            "contact":patient.parent_contact,
+            "application_status":patient.application_status
+             }
+
+
+
+        except Exception as e:
+                await db.rollback()
+
+                # cleanup file if DB fails
+                if file_path and os.path.exists(file_path):
+                    os.remove(file_path)
+
+         
+
+                raise HTTPException(
+                    status_code=500,
+                    detail=str(e)
+                        )
+
+            
 
             
 
