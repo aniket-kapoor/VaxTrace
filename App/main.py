@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from .core import database
-from .api import authentication, register , patient , vaxplan
+from .api import authentication, register , patient , vaxplan , selfRegistration , getApplications
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -69,6 +69,8 @@ app.include_router(authentication.router)
 app.include_router(register.router)
 app.include_router(patient.router)
 app.include_router(vaxplan.router)
+app.include_router(selfRegistration.router)
+app.include_router(getApplications.router)
 
 @app.get("/")
 async def root():
