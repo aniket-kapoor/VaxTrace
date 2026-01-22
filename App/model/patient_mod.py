@@ -7,7 +7,12 @@ from sqlalchemy import Date, String ,DateTime,Boolean, func, Float, Enum
 from typing import Optional
 import enum
 
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import UniqueConstraint 
+from sqlalchemy.orm  import relationship
+
+from typing import TYPE_CHECKING   
+if TYPE_CHECKING:
+    from .patientDocs import PatientDocuments
 
 
 class ApplicationStatus(str, enum.Enum):
@@ -69,6 +74,12 @@ class Patient(Base):
         server_default=func.now(),
         onupdate=func.now()
     )
+
+    
+
+    documents: Mapped[list["PatientDocuments"]] = relationship(
+            back_populates="patient",
+        )
 
     
 

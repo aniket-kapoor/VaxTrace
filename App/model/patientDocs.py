@@ -4,7 +4,12 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import date , datetime 
 from sqlalchemy import Date, String ,DateTime,Boolean, func, Float,ForeignKey
+from sqlalchemy.orm import relationship
 from typing import Optional
+
+from typing import TYPE_CHECKING   
+if TYPE_CHECKING:
+    from .patient_mod import Patient
 
 
 class PatientDocuments(Base):
@@ -25,6 +30,12 @@ class PatientDocuments(Base):
 
     document_type:Mapped[str] = mapped_column(String(50), nullable=False)
     file_path:Mapped[str]= mapped_column(String(255), nullable=False)
+
+  
+
+    patient: Mapped[list["Patient"]] = relationship(
+            back_populates="documents",
+        )
     
 
 
