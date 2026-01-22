@@ -17,7 +17,10 @@ from fastapi.concurrency import run_in_threadpool
 
 router = APIRouter(tags=['Workers'])
 
-@router.get('/get/patients/{patient_id}/plan' , response_model=PatientVaccinePlanOut)
+@router.get(
+    "/patients/plan",
+    response_model=PatientVaccinePlanOut
+)
 
 async def get_plan( parent_contact: str = Query(...),
                     dob: date | None = Query(None),
@@ -33,6 +36,7 @@ async def get_plan( parent_contact: str = Query(...),
 
     if not data:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Patient not found")
+    
     
     return data
 
