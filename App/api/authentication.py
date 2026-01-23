@@ -31,7 +31,7 @@ async def login(
     if not found_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid Credentials",
+            detail="Invalid email",
             headers={"WWW-Authenticate": "Bearer"}
         )
     
