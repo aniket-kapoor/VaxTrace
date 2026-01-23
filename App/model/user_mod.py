@@ -32,6 +32,11 @@ class Users(Base):
         nullable=False
     )
 
+    nin_id:Mapped[str]=mapped_column(String(10), nullable=True )
+    institution_name:Mapped[str]=mapped_column(String(20), nullable=True)
+    type_institution:Mapped[str]=mapped_column(String(20) , nullable=True)
+    
+
     audit: Mapped[list["VaccineAuditLog"]] = relationship(
             back_populates="user",
             cascade="all, delete-orphan"

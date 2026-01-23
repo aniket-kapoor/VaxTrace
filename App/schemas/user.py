@@ -11,6 +11,16 @@ class UserRole(str, enum.Enum):
     HEALTHWORKER = "worker"
     PARENT = "parent"
 
+class UserWorker(BaseModel):
+    name:str
+    email: EmailStr
+    nin_id:str
+    institution_name:str
+    type_institution:str
+    password: str
+    role:UserRole
+
+
 class UserCreate(BaseModel):
     name:str
     email: EmailStr
