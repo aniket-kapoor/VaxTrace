@@ -6,7 +6,7 @@ from ..services import dependency
 from ..schemas.application import PatientApplicationResponse
 import uuid
 
-from ..services.getApplications import get_patient_applications_service , verify_patient_application
+from ..services.getApplications import get_patient_applications_service , verify_patient_application , check_my_application_services
 from ..model.patient_mod import Patient , ApplicationStatus
 
 
@@ -32,3 +32,14 @@ async def verify_application(db: AsyncSession = Depends(database.get_db),
                               current_user = Depends(dependency.allow_worker)
                              ):
   return await verify_patient_application(db , status , patient_id)
+
+
+
+
+@router.get("/check/application/status")
+
+async def check_my_applications(db: AsyncSession = Depends(database.get_db),
+                                parent_contact=str,
+                                current_user = Depends(dependency.allow_parent)):
+  
+ return await check_my_application_services(db, parent_contact)

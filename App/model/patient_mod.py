@@ -48,7 +48,7 @@ class Patient(Base):
     district: Mapped[str] = mapped_column(String(50), nullable=False, index=True)
     city_or_village: Mapped[Optional[str]] = mapped_column(String(50))
     pincode: Mapped[Optional[str]] = mapped_column(String(10))
-    Address:Mapped[str]=mapped_column(String(20), nullable=False)
+    Address:Mapped[str]=mapped_column(String(50), nullable=False)
 
     latitude: Mapped[Optional[float]] = mapped_column(Float)
     longitude: Mapped[Optional[float]] = mapped_column(Float)
