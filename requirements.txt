@@ -2,7 +2,8 @@ fastapi
 uvicorn
 sqlalchemy
 psycopg2-binary
-"python-jose[cryptography]"
+python-jose[cryptography]
+
 PyJWT
 pydantic-settings
 passlib
