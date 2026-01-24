@@ -23,8 +23,6 @@ async def get_current_user(
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    # Note: verify_token is likely a local CPU task, 
-    # so it doesn't need 'await' unless it does I/O (like DB checks)
     token_data = verify_token(token, credentials_exception)
 
     # 2. Use 'select' and 'await db.execute'
