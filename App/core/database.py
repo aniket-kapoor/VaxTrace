@@ -5,7 +5,7 @@ from .config import settings
 
 # 1. Database Configuration
 
-engine = create_async_engine(settings.database_url , echo=False)
+engine = create_async_engine(settings.database_url.strip() , echo=False)
 SessionLocal = async_sessionmaker(
     bind=engine, 
     class_=AsyncSession, 

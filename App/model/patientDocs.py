@@ -29,7 +29,9 @@ class PatientDocuments(Base):
     )
 
     document_type:Mapped[str] = mapped_column(String(50), nullable=False)
-    file_path:Mapped[str]= mapped_column(String(255), nullable=False)
+    dob_document_url:Mapped[str] = mapped_column(String, nullable=False)
+    dob_document_public_id:Mapped[str] = mapped_column(String, nullable=False)
+
 
   
 

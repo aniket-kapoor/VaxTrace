@@ -14,3 +14,5 @@ python-multipart
 argon2-cffi
 sqlalchemy[asyncio]
 alembic
+
+cloudinary
