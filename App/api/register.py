@@ -117,3 +117,28 @@ async def deactivate_account(
     await db.commit()
 
     return {"detail": "Your account has been deactivated successfully"}
+
+
+
+
+@router.get("/user/myaccount")
+
+async def get_my_account(
+                        db: AsyncSession = Depends(database.get_db),
+                        current_user = Depends(dependency.allow_all)
+                        ):
+     
+     query= await db.execute(select(user_mod.Users)
+                      .where(user_mod.Users.email==current_user.email)
+                      )
+     user= query.scalar_one_or_none()
+
+     if not user:
+          raise HTTPException(status_code=status.HTTP_404_NOT_FOUND , detail="Something went wrong")
+     
+     return {
+          "email":user.email,
+          "account_type":user.role,
+          "institution_name":user.institution_name,
+          "type_institution":user.type_institution
+     }
