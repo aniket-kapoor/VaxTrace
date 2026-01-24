@@ -55,7 +55,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://vax-trace-frontend.vercel.app/"
+        "https://vax-trace-frontend.vercel.app"
         
               # React dev server
         
