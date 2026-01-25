@@ -13,7 +13,7 @@ class ApplicationStatus(str, enum.Enum):
 
 class ApplicationDocument(BaseModel):
     document_type:str
-    file_path:str
+   
 
     class Config:
         from_attributes = True
