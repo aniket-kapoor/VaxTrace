@@ -10,8 +10,11 @@ class Settings(BaseSettings):
 
     
     storage_root: str = Field(alias="STORAGE_ROOT")
+    cloudinary_cloud_name: str = Field(alias="CLOUDINARY_CLOUD_NAME")
+    cloudinary_api_key: str = Field(alias="CLOUDINARY_API_KEY")
+    cloudinary_api_secret: str = Field(alias="CLOUDINARY_API_SECRET")
 
-    model_config = SettingsConfigDict(env_file=".env")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     @property
     def storage_path(self) -> Path:

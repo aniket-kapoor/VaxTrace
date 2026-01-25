@@ -65,15 +65,6 @@ class PatientIn(BaseModel):
 
 
 
-
-
-
-
-
-
-
-
-
     
 class PatientResponse(BaseModel):
     name:str
@@ -84,15 +75,11 @@ class PatientResponse(BaseModel):
 class DocumentUploadResponse(BaseModel):
     id:uuid.UUID
     document_type:str
-    file_path:str
+    
 
 class PatientOnboardResponse(BaseModel):
     patient: PatientResponse
     dob_document: DocumentUploadResponse
-
-
-
-
 
 
 

@@ -16,109 +16,115 @@ from ..schemas.patient import PatientIn
 from ..core import database
 
 
+from fastapi import HTTPException
+import cloudinary.uploader
+
 async def create_patient_with_dob_document(
-                db: AsyncSession,
-                patient_data ,
-                dob_document
-                ) -> Patient:
-        
-        file_path: str | None = None
-    
-        try:
-            file_path = await save_upload_file(dob_document)
-            
-            patient=Patient(**patient_data.model_dump())
-            patient.application_status=ApplicationStatus.APPROVED
-            db.add(patient)
-            await db.flush()
+    db: AsyncSession,
+    patient_data,
+    dob_document
+):
+    upload_data = None
 
-            document=PatientDocuments(patient_id=patient.id,
-                                    document_type="DOB_PROOF",
-                                    file_path=file_path)
-            db.add(document)
+    try:
+       
+        upload_data = await save_upload_file(dob_document)
 
-            await generate_patient_vaccine_plan(db=db,
-                                        patient_id=patient.id,
-                                        birth_date=patient.dob
-                                    )
-            
-            await db.commit()
-            await db.refresh(patient)
-            await db.refresh(document)
+        patient = Patient(**patient_data.model_dump())
+        patient.application_status = ApplicationStatus.APPROVED
 
+        db.add(patient)
+        await db.flush()
 
-            return {
+       
+        document = PatientDocuments(
+            patient_id=patient.id,
+            document_type="DOB_PROOF",
+            dob_document_url=upload_data["url"],
+            dob_document_public_id=upload_data["public_id"],
+        )
+        db.add(document)
+
+        await generate_patient_vaccine_plan(
+            db=db,
+            patient_id=patient.id,
+            birth_date=patient.dob
+        )
+
+        await db.commit()
+        await db.refresh(patient)
+        await db.refresh(document)
+
+        return {
             "patient": patient,
             "dob_document": document
-             }
+        }
 
+    except Exception as e:
+        await db.rollback()
 
+       
+        try:
+            if upload_data and upload_data.get("public_id"):
+                cloudinary.uploader.destroy(
+                    upload_data["public_id"],
+                    resource_type="auto"
+                )
+        except:
+            pass
 
-        except Exception as e:
-                await db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
 
-                # cleanup file if DB fails
-                if file_path and os.path.exists(file_path):
-                    os.remove(file_path)
-
-         
-
-                raise HTTPException(
-                    status_code=500,
-                    detail=str(e)
-                        )
-        
 
 
 
 
 async def self_registration_application_service(
-                db: AsyncSession,
-                patient_data ,
-                dob_document
-                ) -> Patient:
-        
-        file_path: str | None = None
-    
+    db: AsyncSession,
+    patient_data,
+    dob_document
+):
+    upload_data = None
+
+    try:
+      
+        upload_data = await save_upload_file(dob_document)
+
+        patient = Patient(**patient_data.model_dump())
+        db.add(patient)
+        await db.flush()  
+
+        document = PatientDocuments(
+            patient_id=patient.id,
+            document_type="DOB_PROOF",
+            dob_document_url=upload_data["url"],
+            dob_document_public_id=upload_data["public_id"],
+        )
+
+        db.add(document)
+
+        await db.commit()
+        await db.refresh(patient)
+
+        return {
+            "patient_name": patient.name,
+            "dob": patient.dob,
+            "contact": patient.parent_contact,
+            "application_status": patient.application_status
+        }
+
+    except Exception as e:
+        await db.rollback()
+
+        #  delete from cloudinary if DB fails
         try:
-            file_path = await save_upload_file(dob_document)
-            
-            patient=Patient(**patient_data.model_dump())
-            db.add(patient)
-            await db.flush()
+            if upload_data and upload_data.get("public_id"):
+                import cloudinary.uploader
+                cloudinary.uploader.destroy(upload_data["public_id"], resource_type="auto")
+        except:
+            pass
 
-            document=PatientDocuments(patient_id=patient.id,
-                                    document_type="DOB_PROOF",
-                                    file_path=file_path)
-            db.add(document)
-
-            await db.commit()
-            await db.refresh(patient)
-            await db.refresh(document)
-
-
-            return {
-            "patient_name":patient.name,
-            "dob":patient.dob,
-            "contact":patient.parent_contact,
-            "application_status":patient.application_status
-             }
-
-
-
-        except Exception as e:
-                await db.rollback()
-
-                # cleanup file if DB fails
-                if file_path and os.path.exists(file_path):
-                    os.remove(file_path)
-
-         
-
-                raise HTTPException(
-                    status_code=500,
-                    detail=str(e)
-                        )
+        raise HTTPException(status_code=500, detail=str(e))
 
             
 
