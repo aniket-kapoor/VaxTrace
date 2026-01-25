@@ -11,6 +11,7 @@ from contextlib import asynccontextmanager
 from .core import database
 from .api import authentication, register , patient , vaxplan , selfRegistration , getApplications
 
+from .core import cloudinary_config
 from fastapi.middleware.cors import CORSMiddleware
 
 # 1. LifeSpan Management

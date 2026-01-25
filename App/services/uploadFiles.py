@@ -1,4 +1,5 @@
 from fastapi import UploadFile, HTTPException
+import cloudinary
 import cloudinary.uploader
 import uuid
 import os
