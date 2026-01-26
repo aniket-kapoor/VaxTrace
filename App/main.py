@@ -54,7 +54,8 @@ app.add_middleware(
         "http://localhost:5173",
         "https://vax-trace-frontend.vercel.app",
         "http://localhost:4173",
-        "vax-trace-frontend-git-master-aniket-kapoors-projects.vercel.app"
+        "https://vax-trace-frontend-git-master-aniket-kapoors-projects.vercel.app"
+
         
            
         
