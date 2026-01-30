@@ -52,7 +52,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:5173",
-        "https://vax-trace-frontend.vercel.app",
+        "https://vaxtrace.vercel.app",
         "http://localhost:4173",
         "https://vax-trace-frontend-git-master-aniket-kapoors-projects.vercel.app"
 
