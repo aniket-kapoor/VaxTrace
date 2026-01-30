@@ -1,71 +1,98 @@
-# VaxTrace-AI-
-A progressive web app to digitise the Vaccine cards and to give active alerts to healthcare workers and parents.
+# 🏥🛡️ VaxTrace Backend
 
-# Digital Vaccination Card — PWA
-
-A **Progressive Web App (PWA)** designed to digitize vaccination cards and securely maintain immunization records. The platform sends **active alerts and reminders** to healthcare workers and parents, helping reduce missed vaccinations and improving timely healthcare follow-ups.
+The core engine behind **VaxTrace**, a high-performance, asynchronous REST API built with **FastAPI**.  
+This backend serves as the **single source of truth** for lifetime vaccination records, managing complex scheduling logic, role-based security, and secure document handling.
 
 ---
 
-## 🧠 Problem Statement  
+## 🚀 Key Features
 
-Traditional vaccination cards are often **lost, damaged, or forgotten**, which makes it difficult to track vaccination history and upcoming doses — especially in rural or high-volume healthcare environments.
+- **Asynchronous API**  
+  Built with FastAPI for high-concurrency and low-latency performance.
 
----
+- **Role-Based Access Control (RBAC)**  
+  Secure endpoints with JWT-based authentication, differentiating between Parents/Guardians and Verified Healthcare Workers.
 
-## 🚀 Solution  
+- **Automated Vaccine Scheduling**  
+  Automatically generates vaccination timelines based on a patient's Date of Birth (DOB).
 
-This project aims to create a **digital vaccination management system** where:
+- **Relational Data Integrity**  
+  Powered by PostgreSQL with normalized schemas to ensure consistency across lifetime records.
 
-✔ Physical vaccination cards are digitized  
-✔ Records are securely stored online  
-✔ Automated alerts notify parents & healthcare workers  
-✔ Vaccination tracking becomes simple, reliable, and accessible  
+- **Cloud Document Management**  
+  Integrated with Cloudinary for secure storage of medical verification documents.
 
-The goal is to improve vaccination coverage and ensure **no child misses an important dose.**
-
----
-
-## ✨ Key Features  
-
-- 📱 **Progressive Web App (PWA)** — installable & mobile-friendly  
-- 🏥 **Digital vaccination record storage**  
-- 🔔 **Automated alerts & reminders**  
-- 👨‍👩‍👧 **Dashboards for parents & healthcare workers**  
-- 🔒 **Secure data handling**  
-- 🌐 **Accessible from anywhere**  
+- **Audit Logging**  
+  Comprehensive tracking of status updates—knowing exactly who updated a record and when.
 
 ---
 
-## 🛠 Tech Stack (Planned / Current)  
+## 🛠️ Tech Stack
 
-- **Frontend:** React / TailwindCSS  
-- **Backend:** FastAPI  
-- **Database:** (PostgreSQL / MongoDB — update accordingly)  
-- **Extras:** OCR + AI-based data extraction (planned)
-
----
-
-## 🎯 Future Scope  
-
-- 📄 Upload & scan physical vaccination cards  
-- 🧠 AI-powered OCR for structured data extraction  
-- 📊 Analytics dashboard for healthcare workers  
-- 🌍 Multi-language support  
-- 🔐 Role-based access control  
+| Component   | Technology |
+|------------|-----------|
+| Language   | Python 3.10+ |
+| Framework  | FastAPI |
+| Database   | PostgreSQL |
+| ORM        | SQLAlchemy  |
+| Auth       | JWT (JSON Web Tokens) & Passlib |
+| Storage    | Cloudinary API |
+| Deployment | Render  |
 
 ---
 
-## 🤝 Contributions  
+## 🏗️ Architecture Overview
 
-Contributions, suggestions, and feature requests are always welcome.  
-Feel free to open an issue or submit a pull request.
+The backend follows a **modular service-oriented architecture**:
+
+- **Models**  
+  Define the database schema (Patients, Vaccines, Records, Users).
+
+- **Schemas (Pydantic)**  
+  Data validation and serialization.
+
+- **Routes**  
+  Endpoints for Authentication, Patient Management, and Vaccination Tracking.
+
+- **Middleware**  
+  Handling CORS, Authentication, and Logging.
 
 ---
 
-## ⭐ Support  
+## 🔧 Installation & Setup
 
-If you find this project helpful, consider **starring the repo** — it motivates further development 🙂
+### 1️⃣ Clone the Repository
 
----
+
+```bash
+git clone https://github.com/aniket-kapoor/VaxTrace
+cd vaxtrace-backend
+2️⃣ Set Up a Virtual Environment
+python -m venv venv
+source venv/bin/activate   # On Windows: venv\Scripts\activate
+
+3️⃣ Install Dependencies
+pip install -r requirements.txt
+
+4️⃣ Environment Variables
+
+Create a .env file in the root directory and add your credentials:
+
+DATABASE_URL=postgresql://user:password@localhost/vaxtrace
+SECRET_KEY=your_super_secret_key
+ALGORITHM=HS256
+
+CLOUDINARY_CLOUD_NAME=your_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+
+5️⃣ Run the Server
+uvicorn main:app --reload
+
+
+
+
+
+
+
 
